@@ -1,0 +1,31 @@
+{
+  "compileOnSave": false,
+  "exclude": ["bazel-*"],
+  "compilerOptions": {
+    "strict": true,
+    "target": "es2020",
+    "module": "es2020",
+    "downlevelIteration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "lib": [
+      "dom",
+      "es2020"
+    ],
+    "experimentalDecorators": true,
+    "declaration": true,
+    "importHelpers": true,
+    "esModuleInterop" : true,
+    "baseUrl": "./",
+    "paths": {
+      "@tianxia/*": ["./*"]
+    }
+  },
+  "angularCompilerOptions": {
+    "compilationMode": "full",
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}

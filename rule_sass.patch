@@ -1,0 +1,64 @@
+diff --git a/sass/sass.bzl b/sass/sass.bzl
+index 4ff6b0f..c19715e 100644
+--- a/sass/sass.bzl
++++ b/sass/sass.bzl
+@@ -88,8 +88,11 @@ def _run_sass(ctx, input, css_output, map_output = None):
+
+     if not ctx.attr.sourcemap:
+         args.add("--no-source-map")
+-    elif ctx.attr.sourcemap_embed_sources:
+-        args.add("--embed-sources")
++    else:
++        if ctx.attr.sourcemap_embed_sources:
++            args.add("--embed-sources")
++        if ctx.attr.embed_source_map:
++            args.add("--embed-source-map")
+
+     # Sources for compilation may exist in the source tree, in bazel-bin, or bazel-genfiles.
+     for prefix in [".", ctx.var["BINDIR"], ctx.var["GENDIR"]]:
+@@ -117,7 +120,7 @@ def _run_sass(ctx, input, css_output, map_output = None):
+
+ def _sass_binary_impl(ctx):
+     # Make sure the output CSS is available in runfiles if used as a data dep.
+-    if ctx.attr.sourcemap:
++    if ctx.attr.sourcemap and not ctx.attr.embed_source_map:
+         map_file = ctx.outputs.map_file
+         outputs = [ctx.outputs.css_file, map_file]
+     else:
+@@ -127,7 +130,7 @@ def _sass_binary_impl(ctx):
+     _run_sass(ctx, ctx.file.src, ctx.outputs.css_file, map_file)
+     return DefaultInfo(runfiles = ctx.runfiles(files = outputs))
+
+-def _sass_binary_outputs(src, output_name, output_dir, sourcemap):
++def _sass_binary_outputs(src, output_name, output_dir, sourcemap, embed_source_map):
+     """Get map of sass_binary outputs, including generated css and sourcemaps.
+
+     Note that the arguments to this function are named after attributes on the rule.
+@@ -137,6 +140,7 @@ def _sass_binary_outputs(src, output_name, output_dir, sourcemap):
+       output_name: The rule's `output_name` attribute
+       output_dir: The rule's `output_dir` attribute
+       sourcemap: The rule's `sourcemap` attribute
++      embed_source_map: The rule's `embed_source_map` attribute
+
+     Returns:
+       Outputs for the sass_binary
+@@ -149,7 +153,7 @@ def _sass_binary_outputs(src, output_name, output_dir, sourcemap):
+         "css_file": css_file,
+     }
+
+-    if sourcemap:
++    if sourcemap and not embed_source_map:
+         outputs["map_file"] = "%s.map" % css_file
+
+     return outputs
+@@ -197,6 +201,10 @@ _sass_binary_attrs = {
+         default = False,
+         doc = "Whether to embed source file contents in source maps.",
+     ),
++    "embed_source_map": attr.bool(
++        default = False,
++        doc = "Whether to embed source maps in generated CSS.",
++    ),
+     "include_paths": attr.string_list(
+         doc = "Additional directories to search when resolving imports",
+     ),
