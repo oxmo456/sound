@@ -1,0 +1,12 @@
+diff --git a/jasmine/private/junit_reporter.js b/jasmine/private/junit_reporter.js
+index 0358715..3a513a3 100644
+--- a/jasmine/private/junit_reporter.js
++++ b/jasmine/private/junit_reporter.js
+@@ -1,5 +1,5 @@
+-const reporters = require("jasmine-reporters");
+-const path = require("path");
++import * as reporters from "jasmine-reporters";
++import * as path from "path";
+
+ const xmlOutputFile = process.env.XML_OUTPUT_FILE;
+

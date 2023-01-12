@@ -1,6 +1,7 @@
 load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
 load("@aspect_rules_jasmine//jasmine:defs.bzl", "jasmine_test")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 
 # buildifier: disable=function-docstring
 def ts_package(name, srcs = [], deps = [], test_srcs = []):
@@ -39,12 +40,25 @@ def ts_package(name, srcs = [], deps = [], test_srcs = []):
             ],
         )
 
+        esbuild(
+            name = "specs_cjs",
+            testonly = 1,
+            entry_points = [file.replace(".ts", ".js") for file in test_srcs],
+            deps = ["_{}_ts_project_spec".format(name)],
+            format = "cjs",
+            metafile = False,
+            output_dir = True,
+            splitting = True,
+            visibility = ["//visibility:public"],
+        )
+
         jasmine_test(
             name = "_{}_jasmine_test".format(name),
-            args = [file.replace(".ts", ".js") for file in test_srcs],
+            args = ["./specs_cjs/" + file.replace(".ts", ".js") for file in test_srcs],
             chdir = native.package_name(),
             data = [
-                "_{}_ts_project".format(name),
-                "_{}_ts_project_spec".format(name),
+                "specs_cjs",
             ],
         )
+
+

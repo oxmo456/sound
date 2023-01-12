@@ -44,6 +44,8 @@ rules_ts_dependencies(
 
 http_archive(
     name = "aspect_rules_jasmine",
+    patch_args = ["-p1"],
+    patches = ["//:rules_jasmine.patch"],
     sha256 = "28bd02acbcd78dd4fbe0ee133b21b11977acd70329a83fc987ff8c0a6ffae9e2",
     strip_prefix = "rules_jasmine-0.2.3",
     url = "https://github.com/aspect-build/rules_jasmine/archive/refs/tags/v0.2.3.tar.gz",
